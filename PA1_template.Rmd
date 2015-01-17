@@ -2,7 +2,9 @@
 title: "Reproducible Research - Assignment 1"
 author: "Michal Buczynski"
 date: "Saturday, January 17, 2015"
-output: html_document
+output:
+  html_document:
+    keep_md: yes
 ---
 ### Loading and preprocessing the data
 
