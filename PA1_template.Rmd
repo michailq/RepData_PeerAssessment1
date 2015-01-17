@@ -24,11 +24,11 @@ str(activity_data)
 ```{r, echo=TRUE}
 
 hist_data <- tapply(activity_data$steps, activity_data$date, sum)
-png("Histogram1.png")
+
 hist(hist_data, col="blue", xlab="Number of steps", 
      main="Histogram")
 grid()
-dev.off()
+
 
 myMean <- tapply(activity_data$steps, activity_data$date, function(x) mean(x,na.rm=TRUE))
 myMedian <- tapply(activity_data$steps, activity_data$date, function(x) median(x, na.rm=TRUE))
@@ -43,13 +43,13 @@ round(myMean,2)
 avgDaily <- tapply(activity_data$steps, activity_data$interval, 
                    function(x) mean(x,na.rm=TRUE))
 
-png("Daily_activity.png")
+
 plot(unique(activity_data$interval), avgDaily, col="blue", type="l",
      xlab="5 - minute intervals", ylab="Avg number of steps taken, across all days",
      xlim=c(0,2355))
 
 max <- which.max(avgDaily)
-dev.off()
+
 
 ```
 
@@ -92,10 +92,10 @@ new_activity_data <- activity_data
 
 new_hist_data <- tapply(new_activity_data$steps, new_activity_data$date, sum)
 
-png("Histogram2.png")
+
 hist(new_hist_data, col="blue", xlab="Number of steps", 
      main="Histogram")
-dev.off()
+
 
 # Mean and median
 
@@ -140,7 +140,7 @@ avgDailyWeekend <- tapply(split_data[[1]]$steps, split_data[[1]]$interval,
 
 avgDailyWorking <- tapply(split_data[[2]]$steps, split_data[[2]]$interval, 
                           mean)
-png(filename="D:/Data Scientist Specialisation/Reproducible research/repdata_data_activity/working_vs_weekend.png")
+
 par(mfrow = c(1,2))
 
 plot(unique(split_data[[1]]$interval), avgDailyWeekend, type="l", col="red",

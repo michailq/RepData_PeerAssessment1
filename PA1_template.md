@@ -28,17 +28,13 @@ str(activity_data)
 
 ```r
 hist_data <- tapply(activity_data$steps, activity_data$date, sum)
-png("Histogram1.png")
+
 hist(hist_data, col="blue", xlab="Number of steps", 
      main="Histogram")
 grid()
-dev.off()
 ```
 
-```
-## pdf 
-##   2
-```
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png) 
 
 ```r
 myMean <- tapply(activity_data$steps, activity_data$date, function(x) mean(x,na.rm=TRUE))
@@ -107,18 +103,16 @@ round(myMean,2)
 avgDaily <- tapply(activity_data$steps, activity_data$interval, 
                    function(x) mean(x,na.rm=TRUE))
 
-png("Daily_activity.png")
+
 plot(unique(activity_data$interval), avgDaily, col="blue", type="l",
      xlab="5 - minute intervals", ylab="Avg number of steps taken, across all days",
      xlim=c(0,2355))
+```
 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+
+```r
 max <- which.max(avgDaily)
-dev.off()
-```
-
-```
-## pdf 
-##   2
 ```
 
 104 time interval has the average maximum number of steps across all days in the dataset.
@@ -181,16 +175,12 @@ new_activity_data <- activity_data
 
 new_hist_data <- tapply(new_activity_data$steps, new_activity_data$date, sum)
 
-png("Histogram2.png")
+
 hist(new_hist_data, col="blue", xlab="Number of steps", 
      main="Histogram")
-dev.off()
 ```
 
-```
-## pdf 
-##   2
-```
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
 
 ```r
 # Mean and median
@@ -289,7 +279,7 @@ avgDailyWeekend <- tapply(split_data[[1]]$steps, split_data[[1]]$interval,
 
 avgDailyWorking <- tapply(split_data[[2]]$steps, split_data[[2]]$interval, 
                           mean)
-png(filename="D:/Data Scientist Specialisation/Reproducible research/repdata_data_activity/working_vs_weekend.png")
+
 par(mfrow = c(1,2))
 
 plot(unique(split_data[[1]]$interval), avgDailyWeekend, type="l", col="red",
@@ -299,5 +289,7 @@ plot(unique(split_data[[2]]$interval), avgDailyWorking, type="l", col="blue",
      main="Working day",  xlab="5 - minute intervals", 
      ylab="Avg number of steps taken across all working days")
 ```
+
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
 
 knit2html(input = "PA1_template.Rmd")
