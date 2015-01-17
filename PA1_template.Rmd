@@ -1,25 +1,147 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "Reproducible Research - Assignment 1"
+author: "Michal Buczynski"
+date: "Saturday, January 17, 2015"
+output: html_document
 ---
+### Loading and preprocessing the data
+
+```{r, echo=TRUE}
 
 
-## Loading and preprocessing the data
+setwd("D:/Data Scientist Specialisation/Reproducible research/repdata_data_activity")
+
+activity_data <- read.csv("activity.csv", header=TRUE)
+
+str(activity_data)
 
 
+```
 
-## What is mean total number of steps taken per day?
+### What is mean total number of steps taken per day?
+```{r, echo=TRUE}
+
+hist_data <- tapply(activity_data$steps, activity_data$date, sum)
+hist(hist_data, col="blue", xlab="Number of steps", 
+     main="Histogram")
+grid()
+
+myMean <- tapply(activity_data$steps, activity_data$date, function(x) mean(x,na.rm=TRUE))
+myMedian <- tapply(activity_data$steps, activity_data$date, function(x) median(x, na.rm=TRUE))
+
+myMedian
+round(myMean,2)
+```
+
+### What is the average daily activity pattern?
+```{r, echo=TRUE}
+
+avgDaily <- tapply(activity_data$steps, activity_data$interval, 
+                   function(x) mean(x,na.rm=TRUE))
+
+plot(unique(activity_data$interval), avgDaily, col="blue", type="l",
+     xlab="5 - minute intervals", ylab="Avg number of steps taken, across all days",
+     xlim=c(0,2355))
+
+max <- which.max(avgDaily)
+
+```
+
+`r max` time interval has the average maximum number of steps across all days in the dataset.
+
+### Imputing missing values
+Calculate  of NAs in the dataset
+```{r, echo=TRUE}
+
+any(is.na(activity_data))
+all(is.na(activity_data))
+
+sumNA <- sum(is.na(activity_data$steps))
+```
+### There are `r sumNA` missing values in the dataset.
+
+Data imputation - replace NA value with average 5 minute interval steps taken across all days.create data with interval and correspodning average steps taken across all days.
+
+```{r, echo=TRUE}
+nrow(activity_data)
+myData <- data.frame(unique(activity_data$interval), as.numeric(avgDaily))
+names(myData) <- c("interval", "steps_avg")
+
+for (i in 1:nrow(activity_data)) {
+  
+    if(is.na(activity_data[i,1])) {
+      
+          for (j in 1:288) {
+            
+                if(activity_data[i,3] == myData[j,1]) {
+                  
+                  activity_data[i,1] <- myData[j,2]
+                  
+                }
+          } 
+    } 
+}
+
+new_activity_data <- activity_data
+
+new_hist_data <- tapply(new_activity_data$steps, new_activity_data$date, sum)
+hist(hist_data, col="blue", xlab="Number of steps", 
+     main="Histogram")
+
+# Mean and median
+
+new_myMean <- tapply(new_activity_data$steps, new_activity_data$date, mean)
+new_myMedian <- tapply(new_activity_data$steps, new_activity_data$date, median)
+
+round(new_myMean,2)
+round(new_myMedian,2)
+```
+The dataset differs significantly after the imputation of NA values. 
+
+### Are there differences in activity patterns between weekdays and weekends?
+```{r, echo=TRUE, fig.width=15}
+
+new_activity_data$date <- as.Date(new_activity_data$date)
+
+wDay <- c()
+
+for (i in 1:17568) {
+  
+  if(weekdays(new_activity_data[i,2]) == "sobota" | 
+       weekdays(new_activity_data[i,2]) == "niedziela") {
+
+        wDay[i] <- 1 # Weekend
+      
+      } else {  
+        
+        wDay[i] <-  2 # Working day
+            
+      }
+}
+
+new_activity_data <- data.frame(new_activity_data,wDay)
+
+new_activity_data$wDay <- factor(new_activity_data$wDay, levels = c(1,2),
+                                 labels=c("Weekend", "Working day"))
+
+split_data <- split(new_activity_data, new_activity_data$wDay)
+
+avgDailyWeekend <- tapply(split_data[[1]]$steps, split_data[[1]]$interval, 
+                mean)
+
+avgDailyWorking <- tapply(split_data[[2]]$steps, split_data[[2]]$interval, 
+                          mean)
+png(filename="D:/Data Scientist Specialisation/Reproducible research/repdata_data_activity/working_vs_weekend.png")
+par(mfrow = c(1,2))
+
+plot(unique(split_data[[1]]$interval), avgDailyWeekend, type="l", col="red",
+     main="Weekend", xlab="5 - minute intervals", 
+     ylab="Avg number of steps taken across all weekend days")
+plot(unique(split_data[[2]]$interval), avgDailyWorking, type="l", col="blue",
+     main="Working day",  xlab="5 - minute intervals", 
+     ylab="Avg number of steps taken across all working days")
 
 
+```
 
-## What is the average daily activity pattern?
-
-
-
-## Imputing missing values
-
-
-
-## Are there differences in activity patterns between weekdays and weekends?
+knit2html(input = "PA1_template.Rmd")
